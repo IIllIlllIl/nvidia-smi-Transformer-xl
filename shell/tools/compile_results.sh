@@ -5,8 +5,8 @@ if [ -z "$1" ]; then
   exit
 fi
 
-declare -a models=("gnmt" "ncf" "transformer_xl" "mask_rcnn" "ssd" "resnet50")
-declare -a frameworks=("PyTorch" "TensorFlow")
+declare -a models=("transformer_xl")
+declare -a frameworks=("")
 declare -a typeOfMeasurements=("perf" "nvidia_smi")
 
 [ -f finalResults.txt ] && rm -f finalResults.txt
@@ -19,7 +19,7 @@ for i in "${models[@]}"; do
       totalRamEnergy=0
       totalRunTime=0
       totalGpuEnergy=0
-      for l in $(seq 1 10); do
+      for l in $(seq 1 2); do
   	
 	      # Create file path of the current report
         currentReport=$1/${i}"_"${j}"_"${k}"_"${l}".txt"
