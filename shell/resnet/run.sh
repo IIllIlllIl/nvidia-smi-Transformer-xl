@@ -5,7 +5,9 @@
 
 # Set default values
 repetitions=1
-thread=1
+epoch=200
+lr=0.1
+weight=0.0001
 
 # Help
 help_info()
@@ -35,7 +37,7 @@ collect_energy_measurements()
     nvidia_smi_PID=$!
 
     # Run model
-    perf stat -e power/energy-pkg/,power/energy-ram/ $1>output.log 2>> ./cpu.log
+    perf stat -e power/energy-pkg/,power/energy-ram/ $1>out.log 2>> ./cpu.log
 
     # When the experiment is elapsed, terminate the nvidia-smi process
     kill -9 "$nvidia_smi_PID"
@@ -47,12 +49,14 @@ collect_energy_measurements()
 }
 
 # Get command-line arguments
-OPTIONS=$(getopt -o r:t: --long repetitions:test -n 'run_experiments' -- "$@")
+OPTIONS=$(getopt -o r:e:l:w: --long repetitions:test -n 'run_experiments' -- "$@")
 eval set -- "$OPTIONS"
 while true; do
   case "$1" in
     -r|--repetitions) repetitions="$2"; shift 2;;
-    -t|--thread) thread="$2"; shift 2;;
+    -e|--epoch) epoch="$2"; shift 2;;
+    -l|--lr)lr="$2";shift 2;;
+    -w|--wd)weight="$2";shift 2;;
     -h|--help) help_info; shift;;
     --) shift; break;;
     *) >&2 log "${redlabel}[ERROR]${default} Wrong command line argument, please try again."; exit 1;;
@@ -63,11 +67,9 @@ done
 log "Switching to performance mode"
 sudo ./governor.sh pe
 
-collect_energy_measurements "python3 ./hw.py" "$repetitions" "$thread"
+log "epoch: "$epoch""
+collect_energy_measurements "python -u trainer.py  --arch=resnet20  --save-dir=save_resnet20 --weight-decay="$weight" --learning-rate="$lr" --epochs="$epoch"" "$repetitions"
 
 log "Done with all tests"
 
-mkdir pc"$repetitions"_"$thread"
-mv *.log ./pc"$repetitions"_"$thread"
-mv ./pc"$repetitions"_"$thread" ./result
 

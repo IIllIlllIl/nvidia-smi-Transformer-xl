@@ -44,10 +44,10 @@ if [ -z "$cpus" ]; then
 	[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 fi
 
-echo "Current CPU governor scaling settings:"
+#echo "Current CPU governor scaling settings:"
 count=0
 for cpu in $cpus; do
-	echo "  CPU $count:" $(cat "$cpu")
+	#echo "  CPU $count:" $(cat "$cpu")
 	((count++))
 done
 
@@ -57,10 +57,10 @@ if [ "x$governor" != "x" ]; then
     done
 fi
 
-echo "New CPU governor scaling settings:"
+#echo "New CPU governor scaling settings:"
 count=0
 for cpu in $cpus; do
-	echo "  CPU $count:" $(cat "$cpu")
+	#echo "  CPU $count:" $(cat "$cpu")
 	((count++))
 done
 
